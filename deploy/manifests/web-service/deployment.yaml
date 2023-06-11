@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-web-service
+  labels:
+   app: python-web-service
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: python-web-service
+  template:
+    metadata:
+      labels:
+        app: python-web-service
+    spec:
+      containers:
+        - name: python-web-service-container
+          image: anantv/nagp-k8s-devops:v1
+          ports:
+            - containerPort: 5000
+          resources:
+           requests: 
+            cpu: 100m
+            memory: 500m
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: python-web-service-cm
+                  key: USER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: python-web-service-cm
+                  key: HOST
+            - name: DB_DEFAULT_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: python-web-service-cm
+                  key: DATABASE
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: python-web-service-secret
+                  key: password
